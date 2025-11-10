@@ -1,51 +1,38 @@
-// src/pages/Home.jsx
-import { Div, Text, Button, Row, Col, Card, Image } from "atomize";
+// src/pages/Home.jsx (MODIFIÉ)
+import * as Atomize from "atomize"; // Importation globale sous l'alias Atomize
 
 const events = [
-  {
-    id: 1,
-    title: "Concert Gospel Night",
-    date: "15 Nov 2025",
-    price: "5000 FCFA",
-    image: "https://images.unsplash.com/photo-1507874457470-272b3c8d8ee2",
-  },
-  {
-    id: 2,
-    title: "Conférence Tech Africa",
-    date: "28 Nov 2025",
-    price: "10000 FCFA",
-    image: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d",
-  },
+  // ... (Vos données d'événements restent ici)
 ];
 
 export default function Home() {
   return (
-    <Div p={{ x: "2rem", y: "3rem" }}>
-      <Text textSize="heading" m={{ b: "2rem" }} textAlign="center" textColor="info800">
+    <Atomize.Div p={{ x: "2rem", y: "3rem" }}>
+      <Atomize.Text textSize="heading" m={{ b: "2rem" }} textAlign="center" textColor="info800">
         Bienvenue sur TicketPlatform 🎉
-      </Text>
+      </Atomize.Text>
 
-      <Row>
+      <Atomize.Row>
         {events.map((event) => (
-          <Col key={event.id} size={{ xs: 12, sm: 6, md: 4 }}>
-            <Card m="1rem" hoverShadow="3">
-              <Image src={event.image} h="200px" w="100%" rounded="lg" />
-              <Div p="1rem">
-                <Text textSize="subheader" m={{ b: "0.5rem" }}>
+          <Atomize.Col key={event.id} size={{ xs: 12, sm: 6, md: 4 }}>
+            <Atomize.Card m="1rem" hoverShadow="3">
+              <Atomize.Image src={event.image} h="200px" w="100%" rounded="lg" />
+              <Atomize.Div p="1rem">
+                <Atomize.Text textSize="subheader" m={{ b: "0.5rem" }}>
                   {event.title}
-                </Text>
-                <Text m={{ b: "0.5rem" }}>{event.date}</Text>
-                <Text m={{ b: "0.5rem" }} textColor="success700">
+                </Atomize.Text>
+                <Atomize.Text m={{ b: "0.5rem" }}>{event.date}</Atomize.Text>
+                <Atomize.Text m={{ b: "0.5rem" }} textColor="success700">
                   {event.price}
-                </Text>
-                <Button bg="info700" hoverBg="info800" textColor="white" rounded="circle">
+                </Atomize.Text>
+                <Atomize.Button bg="info700" hoverBg="info800" textColor="white" rounded="circle">
                   Voir détails
-                </Button>
-              </Div>
-            </Card>
-          </Col>
+                </Atomize.Button>
+              </Atomize.Div>
+            </Atomize.Card>
+          </Atomize.Col>
         ))}
-      </Row>
-    </Div>
+      </Atomize.Row>
+    </Atomize.Div>
   );
 }

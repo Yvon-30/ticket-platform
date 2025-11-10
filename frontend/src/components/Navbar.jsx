@@ -1,10 +1,18 @@
-// src/components/Navbar.jsx
-import { Div, Text, Anchor } from "atomize";
-import { Link } from "react-router-dom";
+// src/components/Navbar.jsx (CORRECTION DE NAVIGATION)
+import * as Atomize from "atomize";
+import { Link } from "react-router-dom"; // L'importation de Link reste
 
 export default function Navbar() {
+  // Styles Atomize pour les liens, pour simuler l'Anchor
+  const linkStyle = {
+    textColor: "white",
+    hoverTextColor: "warning300",
+    textDecoration: "none", // Pour enlever le soulignement par défaut
+    fontSize: "subheader" // Optionnel: pour simuler la taille de l'Anchor
+  };
+
   return (
-    <Div
+    <Atomize.Div 
       d="flex"
       justify="space-between"
       align="center"
@@ -12,21 +20,26 @@ export default function Navbar() {
       bg="info700"
       shadow="2"
     >
-      <Text textColor="white" textSize="heading" fontWeight="600">
+      <Atomize.Text textColor="white" textSize="heading" fontWeight="600">
         🎟️ TicketPlatform
-      </Text>
+      </Atomize.Text>
 
-      <Div d="flex" gap="2rem">
-        <Anchor tag={Link} to="/" textColor="white" hoverTextColor="warning300">
-          Accueil
-        </Anchor>
-        <Anchor tag={Link} to="/events" textColor="white" hoverTextColor="warning300">
-          Événements
-        </Anchor>
-        <Anchor tag={Link} to="/login" textColor="white" hoverTextColor="warning300">
-          Connexion
-        </Anchor>
-      </Div>
-    </Div>
+      <Atomize.Div d="flex" gap="2rem">
+        
+        {/* Remplacer Atomize.Anchor par Link natif encapsulant Atomize.Text */}
+        <Link to="/" style={{ textDecoration: 'none' }}>
+          <Atomize.Text {...linkStyle}>Accueil</Atomize.Text>
+        </Link>
+        
+        <Link to="/events" style={{ textDecoration: 'none' }}>
+          <Atomize.Text {...linkStyle}>Événements</Atomize.Text>
+        </Link>
+        
+        <Link to="/login" style={{ textDecoration: 'none' }}>
+          <Atomize.Text {...linkStyle}>Connexion</Atomize.Text>
+        </Link>
+
+      </Atomize.Div>
+    </Atomize.Div>
   );
 }
