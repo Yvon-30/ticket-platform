@@ -1,17 +1,19 @@
-// src/App.jsx
 import { Routes, Route } from "react-router-dom";
-import { Div } from "atomize";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import Home from "./pages/Home";
 
 function App() {
   return (
-    <Div bg="gray100" minH="100vh">
+    <div className="bg-gray-50 min-h-screen flex flex-col">
       <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-      </Routes>
-    </Div>
+      <main className="flex-1 pt-20">
+        <Routes>
+          <Route path="/" element={<Home />} />
+        </Routes>
+      </main>
+      <Footer />
+    </div>
   );
 }
 

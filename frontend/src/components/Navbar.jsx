@@ -1,45 +1,41 @@
-// src/components/Navbar.jsx (CORRECTION DE NAVIGATION)
-import * as Atomize from "atomize";
-import { Link } from "react-router-dom"; // L'importation de Link reste
+import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 export default function Navbar() {
-  // Styles Atomize pour les liens, pour simuler l'Anchor
-  const linkStyle = {
-    textColor: "white",
-    hoverTextColor: "warning300",
-    textDecoration: "none", // Pour enlever le soulignement par défaut
-    fontSize: "subheader" // Optionnel: pour simuler la taille de l'Anchor
-  };
-
   return (
-    <Atomize.Div 
-      d="flex"
-      justify="space-between"
-      align="center"
-      p={{ x: "2rem", y: "1rem" }}
-      bg="info700"
-      shadow="2"
+    <motion.nav
+      initial={{ y: -60, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+      className="bg-white shadow-md fixed top-0 left-0 w-full z-50"
     >
-      <Atomize.Text textColor="white" textSize="heading" fontWeight="600">
-        🎟️ TicketPlatform
-      </Atomize.Text>
-
-      <Atomize.Div d="flex" gap="2rem">
-        
-        {/* Remplacer Atomize.Anchor par Link natif encapsulant Atomize.Text */}
-        <Link to="/" style={{ textDecoration: 'none' }}>
-          <Atomize.Text {...linkStyle}>Accueil</Atomize.Text>
-        </Link>
-        
-        <Link to="/events" style={{ textDecoration: 'none' }}>
-          <Atomize.Text {...linkStyle}>Événements</Atomize.Text>
-        </Link>
-        
-        <Link to="/login" style={{ textDecoration: 'none' }}>
-          <Atomize.Text {...linkStyle}>Connexion</Atomize.Text>
+      <div className="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
+        {/* Logo */}
+        <Link to="/" className="text-2xl font-bold text-indigo-600">
+          🎟️ Ticket<span className="text-gray-800">Platform</span>
         </Link>
 
-      </Atomize.Div>
-    </Atomize.Div>
+        {/* Navigation Links */}
+        <div className="hidden md:flex space-x-6 font-medium">
+          <Link to="/" className="text-gray-700 hover:text-indigo-600 transition">
+            Accueil
+          </Link>
+          <Link to="/events" className="text-gray-700 hover:text-indigo-600 transition">
+            Événements
+          </Link>
+          <Link to="/contact" className="text-gray-700 hover:text-indigo-600 transition">
+            Contact
+          </Link>
+        </div>
+
+        {/* Bouton connexion */}
+        <Link
+          to="/login"
+          className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition"
+        >
+          Connexion
+        </Link>
+      </div>
+    </motion.nav>
   );
 }
