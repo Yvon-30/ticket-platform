@@ -1,9 +1,8 @@
-// backend/models/Category.js
 const { DataTypes } = require('sequelize');
-const { sequelize } = require('../config/database');
+const sequelize = require('../config/database').sequelize;
 
 const Category = sequelize.define('Category', {
-    category_id: {
+    id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
@@ -12,23 +11,13 @@ const Category = sequelize.define('Category', {
     name: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
-        comment: 'Nom de la catégorie (ex: Concerts)',
-    },
-    slug: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: true,
-        comment: 'Version kebab-case du nom (ex: concerts)',
-    },
-    icon: {
-        type: DataTypes.STRING,
-        allowNull: true,
-        comment: 'Emoji ou chemin d icône pour la catégorie',
+        unique: true, // Ceci garantit que chaque catégorie est unique
     },
 }, {
-    tableName: 'Categories',
-    timestamps: false,
+    tableName: 'categories',
+    timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
 });
 
 module.exports = Category;

@@ -1,86 +1,89 @@
 // backend/server.js
-require('dotenv').config(); 
 
+const sequelize = require('./config/database').sequelize; // S'assurer que vous importez l'instance de sequelize
+const seedDatabase = require('./seeders/seedData');
 const express = require('express');
-const cors = require('cors'); 
-const { sequelize, initializeDatabase } = require('./config/database');
-// Importation du routeur dédié aux événements
-const eventRoutes = require('./routes/eventRoutes'); 
-
-// 1. IMPORTATION EXPLICITE de tous les modèles
-const Organizer = require('./models/Organizer'); 
-const Category = require('./models/Category'); 
-const Event = require('./models/Event');
-const Ticket = require('./models/Ticket'); 
-
-// 2. DÉFINITION CENTRALISÉE DES ASSOCIATIONS
-Organizer.hasMany(Event, { foreignKey: 'organizer_id', onDelete: 'CASCADE' });
-Event.belongsTo(Organizer, { foreignKey: 'organizer_id' }); 
-
-Category.hasMany(Event, { foreignKey: 'category_id', onDelete: 'SET NULL' });
-Event.belongsTo(Category, { foreignKey: 'category_id' }); 
-
-Event.hasMany(Ticket, { foreignKey: 'event_id', onDelete: 'CASCADE' });
-Ticket.belongsTo(Event, { foreignKey: 'event_id' });
-
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
+const cors = require('cors'); // <-- NOUVEAU: Importation du middleware CORS
 
-// =================================================================
-// CORRECTION CORS : CHANGEMENT DU PORT DE 3000 À 5173
-// Votre frontend sur 5173 est maintenant autorisé.
-// =================================================================
-app.use(cors({
-    origin: 'http://localhost:5173' // <-- C'EST LA LIGNE CORRIGÉE !
-}));
+// ----------------------------------------------------------------------
+// Importation des modèles et des associations
+// ----------------------------------------------------------------------
+require('./models/User');
+require('./models/Category');
+require('./models/Organizer');
+require('./models/Event');
+require('./models/Ticket'); 
+require('./models/Booking'); 
+require('./models/associations'); 
 
-// Middleware pour parser le JSON
-app.use(express.json());
+// Importation des routes API
+const eventRoutes = require('./routes/eventRoutes');
+const authRoutes = require('./routes/authRoutes'); // Importation des routes d'authentification
 
-// --- DÉFINITION DES ROUTES ---
-
-// Endpoint de test de base
-app.get('/', (req, res) => {
-    res.send('Backend TicketPlatform est actif.');
-});
-
-// Endpoint de test pour l'API
-app.get('/api', (req, res) => {
-    res.json({ message: 'API active. Utilisez /api/events pour la liste des événements.' });
-});
-
-// ROUTAGE CRITIQUE : Utilisation du routeur d'événements
-// Toutes les requêtes vers /api/events seront gérées par eventRoutes
-app.use('/api/events', eventRoutes); 
-
-
-// Fonction de démarrage du serveur
-const startServer = async () => {
+// --- Phase 1: Connexion et Synchronisation BDD ---
+async function startApplication() {
     try {
-        await initializeDatabase();
-        
-        // Synchroniser le schéma (cela efface et recrée les tables avec { force: true })
-        await sequelize.sync({ force: true }); 
-        console.log('Les tables ont été synchronisées (schema créé).');
+        await sequelize.authenticate();
+        console.log('✅ Connexion à la base de données établie avec succès.');
 
-        const seedCategories = require('./seeders/seedCategories');
-        const seedEvents = require('./seeders/seedEvents');
+        // NOUVEAU: Utiliser `force: true` en mode DEV pour un environnement propre
+        const isDevelopment = process.env.NODE_ENV !== 'production';
         
-        // Exécuter le seeding
-        await seedCategories();
-        await seedEvents(); 
+        // Laisser la synchronisation avec force: true pour le développement initial
+        await sequelize.sync({ force: isDevelopment });
         
-        // Démarrer le serveur Express
+        console.log('✅ Synchronisation des modèles avec la base de données terminée.');
+
+        // --- Phase 2: Seeding des données ---
+        if (isDevelopment) {
+            console.log('--- Début du Seeding des données ---');
+            await seedDatabase();
+            console.log('--- Seeding des données terminé ---');
+        }
+
+        // --- Phase 3: Démarrage du serveur et configuration des routes ---
+        
+        // Configuration CORS pour autoriser le frontend (Vite/React sur port 5173)
+        const corsOptions = {
+            // L'origine de votre application React (qui fait la requête)
+            origin: 'http://localhost:5173', 
+            methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+            credentials: true,
+            optionsSuccessStatus: 204
+        };
+
+        // 1. Middleware CORS: doit venir en premier pour autoriser l'accès
+        app.use(cors(corsOptions));
+        
+        // 2. Middleware pour parser le JSON dans le corps des requêtes
+        app.use(express.json());
+
+        // Middleware de routage
+        // Routes d'authentification: /api/auth/...
+        app.use('/api/auth', authRoutes); 
+        
+        // Routes des événements: /api/events/...
+        app.use('/api/events', eventRoutes); 
+
+        // Route par défaut (si l'utilisateur accède à la racine)
+        app.get('/', (req, res) => {
+            res.send('Bienvenue sur l\'API de la plateforme de billetterie. Utilisez /api/events pour la liste des événements ou /api/auth pour vous connecter/inscrire.');
+        });
+
         app.listen(PORT, () => {
-            console.log(`Serveur démarré sur le port ${PORT}`);
-            console.log(`CORS est configuré pour l'origine: http://localhost:5173`);
+            console.log(`Serveur démarré sur http://localhost:${PORT}`);
         });
 
     } catch (error) {
-        console.error('Erreur de démarrage du serveur ou de connexion à la DB:', error);
-        // Quitter l'application si la base de données ne peut pas être initialisée
-        process.exit(1);
+        console.error('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+        console.error('ERREUR GRAVE: Le serveur n\'a pas pu démarrer.');
+        const errorMessage = error.message || (error.parent && error.parent.sqlMessage) || 'Erreur inconnue';
+        console.error('Détails de l\'erreur:', errorMessage);
+        console.error('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+        process.exit(1); 
     }
-};
+}
 
-startServer();
+startApplication();

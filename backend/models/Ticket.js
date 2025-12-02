@@ -1,24 +1,20 @@
-// backend/models/Ticket.js
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/database');
-const Event = require('./Event'); // Importation du modèle Event pour la relation
+
+const Event = require('./Event'); 
 
 const Ticket = sequelize.define('Ticket', {
-    // Clé Primaire : ticket_id
     ticket_id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
         allowNull: false,
     },
-    // Clé Étrangère : event_id
     event_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        references: {
-            model: Event, // Fait référence à la table 'Events'
-            key: 'event_id',
-        },
+        // 🛑 CORRIGÉ : Retrait de la définition "references" manuelle.
+        // La relation est gérée dans server.js via Ticket.belongsTo(Event).
     },
     buyer_name: {
         type: DataTypes.STRING,
@@ -62,16 +58,16 @@ const Ticket = sequelize.define('Ticket', {
     },
     is_valid: {
         type: DataTypes.BOOLEAN,
-        defaultValue: true, // true (non utilisé) / false (utilisé/scanné)
+        defaultValue: true, 
         allowNull: false,
         comment: 'Statut de validité du billet (true=non scanné)',
     },
 }, {
-    tableName: 'Tickets',
+    tableName: 'tickets',
     timestamps: false,
 });
 
-// Définition de la relation
+// Définition de la relation (si elle était dans Ticket.js)
 Ticket.belongsTo(Event, { foreignKey: 'event_id' });
 Event.hasMany(Ticket, { foreignKey: 'event_id' });
 
