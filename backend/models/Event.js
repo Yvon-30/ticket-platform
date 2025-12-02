@@ -1,66 +1,56 @@
-
-// backend/models/Event.js
 const { DataTypes } = require('sequelize');
-const { sequelize } = require('../config/database');
+const sequelize = require('../config/database').sequelize;
 
 const Event = sequelize.define('Event', {
-    event_id: {
+    id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
         allowNull: false,
     },
     title: {
-        type: DataTypes.STRING(255),
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    date: {
+        type: DataTypes.DATE,
+        allowNull: false,
+    },
+    location: {
+        type: DataTypes.STRING,
         allowNull: false,
     },
     description: {
         type: DataTypes.TEXT,
-        allowNull: true,
-    },
-    // CORRECTION : Renommé en date_time pour correspondre au seeder
-    date_time: {
-        type: DataTypes.DATE,
-        allowNull: false, 
-    },
-    location: {
-        type: DataTypes.STRING(255),
-        allowNull: false, 
     },
     price: {
-        type: DataTypes.DECIMAL(10, 2),
+        type: DataTypes.FLOAT,
         allowNull: false,
-        defaultValue: 0.00,
     },
-    total_tickets: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        defaultValue: 0,
-    },
-    // NOUVEAU : Ajouté pour correspondre aux données du seeder
-    status: {
-        type: DataTypes.ENUM('Draft', 'Published', 'Cancelled', 'Completed'),
-        allowNull: false,
-        defaultValue: 'Draft',
-    },
-    // NOUVEAU : Ajouté pour correspondre aux données du seeder
+    // NOUVEAU CHAMP CRITIQUE POUR L'AFFICHAGE FRONTAUX
     image_url: {
-        type: DataTypes.STRING(255),
+        type: DataTypes.STRING,
+        allowNull: true,
+        // Fournir une image de placeholder par défaut si aucune URL n'est fournie
+        defaultValue: 'https://placehold.co/600x400/CCCCCC/333333?text=Image+Bient%C3%B4t+Disponible',
+    },
+    // Clé étrangère pour la Catégorie
+    categoryId: {
+        type: DataTypes.INTEGER,
         allowNull: true,
     },
-    organizer_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-    },
-    category_id: {
+    // Clé étrangère pour l'Organisateur
+    organizerId: {
         type: DataTypes.INTEGER,
         allowNull: true,
     }
 }, {
     tableName: 'events',
     timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
+    // Mettre `underscored: true` est une bonne pratique
+    underscored: true,
 });
-
-// Les associations sont définies dans server.js.
 
 module.exports = Event;

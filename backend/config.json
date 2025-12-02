@@ -1,0 +1,30 @@
+{
+  "development": {
+    "username": "root",
+    "password": "root_password_admin",
+    "database": "tickets_platform",
+    "host": "127.0.0.1",
+    "dialect": "mysql",
+    "define": {
+      "underscored": true,
+      "charset": "utf8",
+      "collate": "utf8_general_ci",
+      "timestamps": true
+    },
+    "logging": false
+  },
+  "test": {
+    "username": "root",
+    "password": "",
+    "database": "tickets_platform_test",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "root",
+    "password": "",
+    "database": "tickets_platform_production",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  }
+}
